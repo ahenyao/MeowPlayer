@@ -1,0 +1,34 @@
+
+# Editor-specific
+
+## Rider
+.idea/
+riderModule.iml
+
+## Visual Studio
+.vs/
+*.user
+*.userosscache
+*.sln.docstates
+
+## VS Code
+.vscode/
+
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+
+# NuGet packages
+*.nupkg
+*.snupkg
+
+
+# Build artifacts
+bin/
+obj/
+packages/
+build/
+

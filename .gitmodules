@@ -1,0 +1,6 @@
+[submodule "External/AeroAvalonia"]
+	path = External/AeroAvalonia
+	url = https://github.com/ahenyao/aero-theme-for-avalonia.git
+[submodule "External/ManagedBass"]
+	path = External/ManagedBass
+	url = https://github.com/ahenyao/ManagedBass.git
