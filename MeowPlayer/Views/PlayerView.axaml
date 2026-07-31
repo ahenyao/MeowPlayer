@@ -1,0 +1,107 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:converters="clr-namespace:MeowPlayer.Converters"
+             xmlns:views="clr-namespace:MeowPlayer.Views"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="MeowPlayer.Views.PlayerView"
+             x:CompileBindings="False">
+    
+    <UserControl.Resources>
+        <converters:MathMultiplierConverter x:Key="MathMultiplier"/>
+        <converters:MathMultiplierThicknessConverter x:Key="MathMultiplierThickness"/>
+    </UserControl.Resources>
+    
+    <UserControl.Styles>
+        <Style Selector="Button.MediaButtons:not(Button#Bt_Play)">
+            <Setter Property="Width"  Value="{Binding Bounds.Width,  ElementName=Bt_Play, Converter={StaticResource MathMultiplier}, ConverterParameter='1.5'}"/>
+            <Setter Property="Height" Value="{Binding Bounds.Height, ElementName=Bt_Play, Converter={StaticResource MathMultiplier}, ConverterParameter='0.75'}"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+        
+        <Style Selector="Button.MediaButtons#Bt_Prev">
+            <Setter Property="Width"   Value="{Binding Bounds.Width, ElementName=Bt_Play, Converter={StaticResource MathMultiplier}, ConverterParameter='2.0'}"/>
+            <Setter Property="Margin"  Value="{Binding Bounds.Width, ElementName=Bt_Play, Converter={StaticResource MathMultiplierThickness}, ConverterParameter='0.5, 0, 0,0,-x,0'}"/>
+            <Setter Property="Padding" Value="{Binding Bounds.Width, ElementName=Bt_Play, Converter={StaticResource MathMultiplierThickness}, ConverterParameter='0.25, 0, 0,0,x,0'}"/>
+        </Style>
+        
+        <Style Selector="Button.MediaButtons#Bt_Next">
+            <Setter Property="Width"   Value="{Binding Bounds.Width, ElementName=Bt_Play, Converter={StaticResource MathMultiplier}, ConverterParameter='2.0'}"/>
+            <Setter Property="Margin"  Value="{Binding Bounds.Width, ElementName=Bt_Play, Converter={StaticResource MathMultiplierThickness}, ConverterParameter='0.5, 0, -x,0,0,0'}"/>
+            <Setter Property="Padding" Value="{Binding Bounds.Width, ElementName=Bt_Play, Converter={StaticResource MathMultiplierThickness}, ConverterParameter='0.25, 0, x,0,0,0'}"/>
+        </Style>
+        
+        <Style Selector="Button.MediaButtons#Bt_Play">
+            <Setter Property="Width" Value="{Binding $self.Bounds.Height}"/>
+            <Setter Property="MaxHeight"  Value="{Binding $parent[views:PlayerView].BtPlayMaxHeight}"/>
+            <Setter Property="CornerRadius"  Value="100"/>
+            <Setter Property="ZIndex"  Value="1"/>
+            <Setter Property="FontSize" Value="25"/>
+            <Setter Property="Content" Value=">"/>
+        </Style>
+        
+        <Style Selector="Button.MediaButtons#Bt_Shuffle">
+            <Setter Property="CornerRadius" Value="100, 0, 0, 100"/>
+        </Style>
+            
+        <Style Selector="Button.MediaButtons#Bt_Repeat">
+            <Setter Property="CornerRadius" Value="0, 100, 100, 0"/>
+        </Style>
+        
+    </UserControl.Styles>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="10*"/> <!--  idk  -->
+            <RowDefinition Height="50*"/> <!--  Album art  -->
+            <RowDefinition Height="15*"/> <!--  Text  -->
+            <RowDefinition Height="10*"/> <!--  Slider  -->
+            <RowDefinition Height="15*"/> <!--  Play/Pause  -->
+        </Grid.RowDefinitions>
+        
+        <Border Grid.Row="1" Background="BlueViolet" Width="{Binding $self.Bounds.Height}" x:Name="Img_SongAlbumArt">
+            <Image />
+        </Border>
+        
+        <TextBlock Grid.Row="2" TextAlignment="Center" HorizontalAlignment="Center" Margin="0,20,0,0" x:Name="Tb_SongTitleArtist">
+            Song title<LineBreak/>
+            Artist
+        </TextBlock>
+        
+        <Grid Grid.Row="3" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="10*"/>
+                <ColumnDefinition Width="80*"/>
+                <ColumnDefinition Width="10*"/>
+            </Grid.ColumnDefinitions>    
+            
+            <Grid Grid.Column="0" ColumnSpan="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="25*"/>
+                    <ColumnDefinition Width="50*"/>
+                    <ColumnDefinition Width="25*"/>
+                </Grid.ColumnDefinitions>
+                
+                <TextBlock Grid.Column="0" Text="0:00" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="18" Margin="10, 0" x:Name="Tb_SongDurationCurrent"/>
+                <Slider Grid.Column="1" VerticalAlignment="Center" Minimum="0" Maximum="{Binding $parent[views:PlayerView].SongDuration}" Value="{Binding $parent[views:PlayerView].SongPosition}" x:Name="Sl_Position"/>
+                <TextBlock Grid.Column="2"  Text="2:17" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="18" Margin="10, 0" x:Name="Tb_SongDurationFull"/>
+            </Grid>
+        </Grid>
+        
+        <Grid Grid.Row="4" Margin="0, 0, 0, 10">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button x:Name="Bt_Shuffle" Classes="MediaButtons" Content="🔀" Click="Bt_Shuffle_OnClick"/>
+                <Button x:Name="Bt_Prev" Classes="MediaButtons" Content="&lt;&lt;" Click="Bt_Prev_OnClick"/>
+                
+                <Button x:Name="Bt_Play"  Classes="MediaButtons" Click="Bt_Play_OnClick"/>
+
+                <Button x:Name="Bt_Next" Classes="MediaButtons" Content="&gt;&gt;" Click="Bt_Next_OnClick"/>
+                <Button x:Name="Bt_Repeat" Classes="MediaButtons" Content="🔁" Click="Bt_Repeat_OnClick"/>
+            </StackPanel>
+        </Grid>
+        
+        
+        </Grid>
+</UserControl>

@@ -1,0 +1,130 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="MeowPlayer.Views.SettingsView">
+    
+    <UserControl.Styles>
+        <Style Selector="ListBox">
+            <Setter Property="Margin" Value="20"/>
+            <Setter Property="Padding" Value="20"/>
+            <Setter Property="Background" Value="Transparent" />
+            
+            <Setter Property="ItemsPanel">
+                <ItemsPanelTemplate>
+                    <UniformGrid x:Name="SettingsGrid" Columns="1" ColumnSpacing="25" RowSpacing="25"/>
+                </ItemsPanelTemplate>
+            </Setter>
+        
+            <Style Selector="^ ListBoxItem">
+                <Setter Property="VerticalAlignment" Value="Top"/>
+            </Style>
+        
+            <Style Selector="^ ListBoxItem > StackPanel">
+                <Setter Property="Orientation" Value="Horizontal"/>
+                
+                <Style Selector="^ > Image">
+                    <Setter Property="Width" Value="50"/>
+                    <Setter Property="Height" Value="50"/>
+                    <Setter Property="Margin" Value="0, 0, 10, 0"/>
+                </Style>
+                
+                <Style Selector="^ > StackPanel">
+                    <Setter Property="Orientation" Value="Vertical"/>
+                    
+                    <Style Selector="^  > TextBlock:nth-child(1)">
+                        <Setter Property="FontWeight" Value="Medium"/>
+                        <Setter Property="FontSize" Value="16"/>
+                        <Setter Property="Foreground" Value="DarkGreen"/>
+                    </Style>
+                    
+                    <Style Selector="^  > TextBlock:nth-child(n+2)">
+                        <Setter Property="FontWeight" Value="Medium"/>
+                        <Setter Property="FontSize" Value="12"/>
+                        <Setter Property="Foreground" Value="DodgerBlue"/>
+                    </Style>
+                </Style>
+            </Style>
+        </Style>
+        
+        <ContainerQuery Name="settings-container" Query="min-width:850">
+            <Style Selector="UniformGrid#SettingsGrid">
+                <Setter Property="Columns" Value="2" />
+            </Style>
+        </ContainerQuery>
+        
+    </UserControl.Styles>
+    
+    <Panel Container.Name="settings-container" Container.Sizing="Width">
+        <ListBox>
+            <ListBoxItem>
+                <StackPanel>
+                    <Image Source="avares://MeowPlayer/Assets/avalonia-logo.ico" />
+                    <StackPanel>
+                        <TextBlock Text="Appearance and Personalization"/>
+                        <TextBlock Text="Change the theme"/>
+                        <TextBlock Text="Adjust screen scale"/>
+                    </StackPanel>
+                </StackPanel>
+            </ListBoxItem>
+
+            <ListBoxItem>
+                <StackPanel>
+                    <Image Source="avares://MeowPlayer/Assets/avalonia-logo.ico"/>
+                    <StackPanel>
+                        <TextBlock Text="Audio"/>
+                        <TextBlock Text="Output devices &amp; quality"/>
+                    </StackPanel>
+                </StackPanel>
+            </ListBoxItem>
+            
+            <ListBoxItem>
+                <StackPanel>
+                    <Image Source="avares://MeowPlayer/Assets/avalonia-logo.ico"/>
+                    <StackPanel>
+                        <TextBlock Text="Storage and Cache"/>
+                        <TextBlock Text="Clear cached album art"/>
+                        <TextBlock Text="Log file directory location"/>
+                    </StackPanel>
+                </StackPanel>
+            </ListBoxItem>
+            
+            <ListBoxItem>
+                <StackPanel>
+                    <Image Source="avares://MeowPlayer/Assets/avalonia-logo.ico"/>
+                    <StackPanel>
+                        <TextBlock Text="Playback Settings"/>
+                        <TextBlock Text="Crossfade durations"/>
+                    </StackPanel>
+                </StackPanel>
+            </ListBoxItem>
+            
+            <ListBoxItem>
+                <StackPanel>
+                    <Image Source="avares://MeowPlayer/Assets/avalonia-logo.ico"/>
+                    <StackPanel>
+                        <TextBlock Text="Keyboard Shortcuts"/>
+                        <TextBlock Text="Global media keys integration"/>
+                        <TextBlock Text="Custom player hotkeys"/>
+                    </StackPanel>
+                </StackPanel>
+            </ListBoxItem>
+            
+            <ListBoxItem>
+                <StackPanel>
+                    <Image Source="avares://MeowPlayer/Assets/avalonia-logo.ico"/>
+                    <StackPanel>
+                        <TextBlock Text="About"/>
+                        <TextBlock Text="Check version"/>
+                        <TextBlock Text="Check for updates"/>
+                        <TextBlock Text="License"/>
+                    </StackPanel>
+                </StackPanel>
+            </ListBoxItem>
+
+            <ListBoxItem/>
+            <ListBoxItem/>
+        </ListBox>
+    </Panel>
+</UserControl>

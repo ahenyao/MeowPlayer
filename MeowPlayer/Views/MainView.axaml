@@ -1,0 +1,55 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="MeowPlayer.Views.MainView"
+             xmlns:local="using:MeowPlayer"
+             xmlns:views="clr-namespace:MeowPlayer.Views">
+    
+    <UserControl.Styles>
+        <Style Selector="TabControl > TabItem">
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        </Style>
+    </UserControl.Styles>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+    
+        <TabControl Grid.Row="0" Margin="6" x:Name="MeowPlayer_TabControl">
+            <TabControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Rows="1"/>
+                </ItemsPanelTemplate>
+            </TabControl.ItemsPanel>
+            
+            <TabItem Header="Player">
+                <views:PlayerView x:Name="MeowPlayer_PlayerView"/>
+            </TabItem>
+            
+            <TabItem Header="Library">
+                <views:LibraryView x:Name="MeowPlayer_LibraryView"/>
+            </TabItem>
+            
+            <TabItem Header="Settings">
+                <views:SettingsView x:Name="MeowPlayer_SettingsView"/>
+            </TabItem>
+        </TabControl>
+        
+        <TextBlock Grid.Row="1" HorizontalAlignment="Right" Margin="0, 0, 30, 0">
+            <TextBlock.Text>
+                <MultiBinding StringFormat="MeowPlayer {0}+{1} @ {2}">
+                    <Binding Source="{x:Static local:BuildInfo.Version}" />
+                    <Binding Source="{x:Static local:BuildInfo.GitCommit}" />
+                    <Binding Source="{x:Static local:BuildInfo.CompileDate}" />
+                </MultiBinding>
+            </TextBlock.Text>
+        </TextBlock>
+    </Grid>
+
+</UserControl>

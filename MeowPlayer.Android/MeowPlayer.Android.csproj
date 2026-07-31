@@ -1,0 +1,55 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net10.0-android</TargetFramework>
+        <SupportedOSPlatformVersion>23</SupportedOSPlatformVersion>
+        <Nullable>enable</Nullable>
+        <ApplicationId>xyz.000000404.ahenyao.MeowPlayer</ApplicationId>
+        <ApplicationVersion>1</ApplicationVersion>
+        <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+        <AndroidPackageFormat>apk</AndroidPackageFormat>
+        <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <AndroidResource Include="Icon.png">
+            <Link>Resources\drawable\Icon.png</Link>
+        </AndroidResource>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia.Android" />
+        <PackageReference Include="Xamarin.AndroidX.Core" />
+        <PackageReference Include="Xamarin.AndroidX.Core.SplashScreen" />
+        <PackageReference Include="Xamarin.AndroidX.Migration" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\MeowPlayer\MeowPlayer.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <AndroidNativeLibrary Include="..\External\libs\un4seen_bass\android\arm64-v8a\libbass.so" Abi="arm64-v8a" />
+        <AndroidNativeLibrary Include="..\External\libs\un4seen_bass\android\armeabi-v7a\libbass.so" Abi="armeabi-v7a" />
+        <AndroidNativeLibrary Include="..\External\libs\un4seen_bass\android\x86\libbass.so" Abi="x86" />
+        <AndroidNativeLibrary Include="..\External\libs\un4seen_bass\android\x86_64\libbass.so" Abi="x86_64" />
+    </ItemGroup>
+
+
+    <Target Name="CopyApkToBuildDir" AfterTargets="Publish">
+        <ItemGroup>
+            <SignedApk Include="$(PublishDir)*-Signed.apk" />
+        </ItemGroup>
+
+        <PropertyGroup>
+            <_ArchSuffix>-hybrid</_ArchSuffix>
+            <_ArchSuffix Condition="'$(RuntimeIdentifier)' != ''">-$(RuntimeIdentifier)</_ArchSuffix>
+            <_ArchSuffix Condition="'$(RuntimeIdentifiers)' != ''">-$([System.String]::Copy('$(RuntimeIdentifiers)').Replace(';', '_'))</_ArchSuffix>
+        </PropertyGroup>
+
+        <Copy SourceFiles="@(SignedApk)"
+              DestinationFiles="$(MSBuildProjectDirectory)\..\build\MeowPlayer$(_ArchSuffix).apk"
+              SkipUnchangedFiles="true" />
+    </Target>
+
+</Project>
