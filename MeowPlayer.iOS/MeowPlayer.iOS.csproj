@@ -15,6 +15,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <NativeReference Include="..\External\libs\ios\bass.xcframework" Kind="Framework" SmartLink="True" />
+        <NativeReference Include="..\External\libs\un4seen_bass\ios\bass.xcframework" Kind="Framework" SmartLink="False" ForceLoad="True"/>
     </ItemGroup>
 </Project>

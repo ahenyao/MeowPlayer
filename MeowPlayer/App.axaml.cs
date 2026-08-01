@@ -20,7 +20,11 @@ public partial class App : Application {
         Logger.Log(Logger.LogLevel.INFO, $"Running on:   {RuntimeInformation.OSDescription} ({RuntimeInformation.OSArchitecture})");
         Logger.Log(Logger.LogLevel.INFO, $"Process info: {RuntimeInformation.ProcessArchitecture}; {RuntimeInformation.FrameworkDescription}; {RuntimeInformation.RuntimeIdentifier}");
         Utils.Platform.AssignLogFiles();
-        
+
+        if (Utils.Platform.IOS)
+            NativeLibrary.SetDllImportResolver(typeof(ManagedBass.Bass).Assembly,
+                (_, _, _) => NativeLibrary.GetMainProgramHandle());
+
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
             desktop.MainWindow = new MainWindow();
         }
