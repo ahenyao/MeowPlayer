@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using ManagedBass;
@@ -21,10 +22,13 @@ public class MediaPlayer : ManagedBass.MediaPlayer {
     }
     
     protected override int OnLoad(string fileName) {
-        if (_buffer != null) {
-            return Bass.CreateStream(_buffer, 0, _buffer.Length, BassFlags.Default);
-        }
-        return base.OnLoad(fileName);
+        int handle = 0;
+        
+        if (_buffer != null)
+            handle = Bass.CreateStream(_buffer, 0, _buffer.Length, BassFlags.Default);
+        else
+            handle = base.OnLoad(fileName);
+        return handle;
     }
     
     

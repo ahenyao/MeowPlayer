@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -45,7 +46,10 @@ public partial class LibraryView : UserControl {
             if (await Globals.PlayerView.Player.LoadAsync(filestream)) {
                 Globals.PlayerView.Song(Globals.PlayerView.Player.Title, Globals.PlayerView.Player.Artist, Globals.PlayerView.Player.Duration);
                 Globals.TabControl.SelectedIndex = 0;
-                Globals.PlayerView.Player.Play();
+
+                PlatformMessaging.OnPlayRequested?.Invoke();
+
+                ID3Reader id3Reader = new ID3Reader(stream: filestream);
             }
         }
     }
