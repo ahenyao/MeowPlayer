@@ -3,13 +3,21 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Avalonia.Controls;
 
 namespace MeowPlayer.Utils;
 
 public class ID3Reader {
 
-
+    public record Artwork(
+        string MimeType,
+        byte PictureType,
+        string Description,
+        byte[] Data
+    );
+    
+    List<Artwork> artworks = new();
+    
+    
     public record FrameInfo(string ID3v22, string ID3v23, string ID3v24) {
         public string this[int version] => version switch {
             2 => ID3v22,
@@ -114,7 +122,7 @@ public class ID3Reader {
     private byte versionMajor = 0x00;
     private byte versionMinor = 0x00;
     
-    List<(string Name, MemoryStream data)> frames = new();
+    List<(string Name, byte[] data)> frames = new();
     
     public ID3Reader(string? path = null, Stream? stream = null) {
 
@@ -129,13 +137,13 @@ public class ID3Reader {
         byte[] header = new byte[10];
         fileStream.ReadExactly(header, 0, header.Length);
 
-        int magicNumber = (header[0] << 16) | (header[1] << 8) | header[2];
+        int magicNumber = ReadInt24(header[0..3]);
 
         if (magicNumber == 0x494433) {
             byte major = header[3]; // ID3v2.X.0
             byte minor = header[4]; // ID3v2.0.X
             byte flags = header[5];
-            int size = (header[6] << 21) | (header[7] << 14) | (header[8] << 7) | header [9]; // 28-bit synchsafe int
+            int size = ReadSynchsafeInt(header[6..10]); // 28-bit synchsafe int
 
             versionMajor = major;
             versionMinor = minor;
@@ -144,13 +152,37 @@ public class ID3Reader {
 
             byte[] framesDataArray = new byte[size];
             fileStream.ReadExactly(framesDataArray, 0, framesDataArray.Length);
+            
+            if ((flags & 0x80) != 0)  // bit 7: Unsynchronisation
+                framesDataArray = RemoveUnsynchronisation(framesDataArray);
+            
             MemoryStream framesData = new MemoryStream(framesDataArray);
-
-            int frameNameSize = -1;
-            if (major == 0x02) frameNameSize = 3;
-            else if (major == 0x03 || major == 0x04) frameNameSize = 4;
-
+            
             framesData.Seek(0, SeekOrigin.Begin);
+            
+            if ((flags & 0x40) != 0) {  // bit 6: extended header
+                if(versionMajor == 3) {
+                    int extendedHeaderSize = ReadInt32(framesData);
+                    framesData.Seek(extendedHeaderSize, SeekOrigin.Current);
+                    
+                } else if (versionMajor == 4) {
+                    int extendedHeaderSize = ReadSynchsafeInt(framesData);
+                    int bytesToSkip = extendedHeaderSize - 4;
+                    if(bytesToSkip > 0) framesData.Seek(bytesToSkip, SeekOrigin.Current);
+                }
+            }
+            
+
+            // int frameNameSize = -1;
+            // if (major == 0x02) frameNameSize = 3;
+            // else if (major == 0x03 || major == 0x04) frameNameSize = 4;
+
+            int frameNameSize = versionMajor switch {
+                2 => 3,
+                3 => 4,
+                4 => 4,
+                _ => throw new NotSupportedException($"Unsupported ID3 version: 2.{major}.{minor}")
+            };
 
             while (framesData.Position < framesData.Length) {
                 byte[] frameNameBytes = new byte[frameNameSize];
@@ -164,17 +196,21 @@ public class ID3Reader {
 
                 int frameSize = -1;
                 if (major == 0x02)
-                    frameSize = (framesData.ReadByte() << 16) | (framesData.ReadByte() << 8) | framesData.ReadByte(); // 24-bit int
+                    frameSize = ReadInt24(framesData); // 24-bit int
                 if (major == 0x03)
-                    frameSize = (framesData.ReadByte() << 24) | (framesData.ReadByte() << 16) | (framesData.ReadByte() << 8) | framesData.ReadByte(); // 32-bit int
+                    frameSize = ReadInt32(framesData); // 32-bit int
                 if (major == 0x04)
-                    frameSize = (framesData.ReadByte() << 21) | (framesData.ReadByte() << 14) | (framesData.ReadByte() << 7) | framesData.ReadByte(); // 28-bit synchsafe int
+                    frameSize = ReadSynchsafeInt(framesData); // 28-bit synchsafe int
 
                 if (major == 0x03 || major == 0x04) {
                     byte[] frameFlags = new byte[2];
                     framesData.ReadExactly(frameFlags, 0, frameFlags.Length);
                 }
 
+                
+                if (frameSize < 0 || frameSize > (framesData.Length - framesData.Position))
+                    break;
+                
                 byte[] data = new byte[frameSize];
                 framesData.ReadExactly(data, 0, data.Length);
 
@@ -190,13 +226,15 @@ public class ID3Reader {
 
                 if (frameName is "PIC" or "APIC") {
                     if (major == 0x02) {
-                        byte[] imageFormat = data[1..3];
+                        byte[] imageFormat = data[1..4];
                         byte imageType = data[4];
 
                         data = data.Skip(5).ToArray(); // encoding byte(1)  +  imageFormat(3)  +  imageType(1)
                         data = data.Skip(Array.IndexOf(data, (byte)0x00) + 1).ToArray(); // image desc
-                    }
-                    else {
+                        
+                        artworks.Add(new Artwork(Encoding.ASCII.GetString(imageFormat), imageType, "", data));
+                        
+                    } else {
                         int nulCharNumOfMime = Array.IndexOf(data, (byte)0x00, 1); // skip encoding byte
                         string mimeType = Encoding.ASCII.GetString(data[1..nulCharNumOfMime]);
                         byte imageType = data[nulCharNumOfMime + 1];
@@ -227,10 +265,13 @@ public class ID3Reader {
 
                         data = data.Skip(nulCharNumOfDesc + 1).ToArray();
                         if (encodingByte is 0x01 or 0x02) data = data.Skip(2).ToArray();
+                        
+                        artworks.Add(new Artwork(mimeType, imageType, descType, data));
+                        
                     }
 
                     try {
-                        Console.WriteLine(BitConverter.ToString(data).Substring(0, 50));
+                        // Console.WriteLine(BitConverter.ToString(data).Substring(0, 50));
                         // img_AlbumArt.Source = new Bitmap(new MemoryStream(data));
                     } catch (Exception ex) {
                         Console.WriteLine(ex.ToString());
@@ -269,7 +310,7 @@ public class ID3Reader {
                     // Console.WriteLine(a3);
                     // Console.WriteLine(a3 + "\n");
 
-                    MemoryStream textEncode = new MemoryStream([encodingByte, ..data]);
+                    byte[] textEncode = [encodingByte, ..data];
                     frames.Add((frameName, textEncode));
                 }
             }
@@ -283,26 +324,42 @@ public class ID3Reader {
     public object getValueFromTag(string tagHumanName) {
         
         string tagInternalName = "<null>";
-        Console.WriteLine("id3 version: " + versionMajor);
+        // Console.WriteLine("id3 version: " + versionMajor);
 
         switch (tagHumanName.ToLower()) {
             case "title":
                 tagInternalName = TagContainer.Title[versionMajor];
-                MemoryStream? value = getTagValue(tagInternalName);
-                if (value is not null)  return decodeID3String(value.ToArray());
+                byte[]? value = GetTagValue(tagInternalName);
+                if (value is not null)  return DecodeID3String(value.ToArray());
                 break;
+            // case "album art":
+            //     tagInternalName = TagContainer.Artwork[versionMajor];
+            //     MemoryStream? value = getTagValue(tagInternalName);
             
         }
         
         return $"Tag {tagHumanName} ({tagInternalName}) was null.";
     }
 
-    public MemoryStream? getTagValue(string ID3tagName) {
-        MemoryStream ms = frames.FirstOrDefault(f => string.Equals(f.Name, ID3tagName, StringComparison.OrdinalIgnoreCase)).Item2;
-        return ms;
+    public byte[]? GetTagValue(string ID3tagName) {
+        return GetTagValues(ID3tagName).FirstOrDefault();
+    }
+    
+    public List<byte[]> GetTagValues(string ID3tagName) {
+        return frames.Where(f => string.Equals(f.Name, ID3tagName, StringComparison.OrdinalIgnoreCase)).Select(f => f.data).ToList();
+    }
+    
+    public List<Artwork> GetArtworks() {
+        return artworks;
     }
 
-    public string decodeID3String(byte[] str) {
+    public Artwork? GetFrontCover() {
+        var img = artworks.FirstOrDefault(x => x.PictureType == 3);
+        if (img is null) img = artworks.FirstOrDefault();
+        return img;
+    }
+
+    public string DecodeID3String(byte[] str) {
         
         string stringEncoding = str[0] switch {
             0x00 => "iso-8859-1",
@@ -313,5 +370,28 @@ public class ID3Reader {
         };
         
         return Encoding.GetEncoding(stringEncoding).GetString(str[1..]);
+    }
+
+    private static int ReadInt24(Stream stream) => ((stream.ReadByte() << 16) | (stream.ReadByte() << 8) | stream.ReadByte());
+    private static int ReadInt32(Stream stream) => ((stream.ReadByte() << 24) | (stream.ReadByte() << 16) | (stream.ReadByte() << 8) | stream.ReadByte());
+    private static int ReadSynchsafeInt(Stream stream) => ((stream.ReadByte() << 21) | (stream.ReadByte() << 14) | (stream.ReadByte() << 7) | stream.ReadByte());
+    private static int ReadInt24(byte[] bytes) => ReadInt24(new MemoryStream(bytes));
+    private static int ReadInt32(byte[] bytes) => ReadInt32(new MemoryStream(bytes));
+    private static int ReadSynchsafeInt(byte[] bytes) => ReadSynchsafeInt(new MemoryStream(bytes));
+
+    private static byte[] RemoveUnsynchronisation(byte[] bytes) {
+        List<byte> result = new(bytes.Length);
+
+        for (int i = 0; i < bytes.Length; i++) {
+            result.Add(bytes[i]);
+
+            if (bytes[i] == 0xFF)
+                if(i + 1 < bytes.Length)
+                    if(bytes[i + 1] == 0x00)
+                        i++;
+
+        }
+        
+        return result.ToArray();
     }
 }

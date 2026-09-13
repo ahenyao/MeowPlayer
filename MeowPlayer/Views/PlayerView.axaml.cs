@@ -36,14 +36,14 @@ public partial class PlayerView : UserControl {
     // this checks whether playback status was changed from android notification or play button
     bool IsPlaying {
         get {
-            Img_SongAlbumArt.Background = new SolidColorBrush(
+            Border_SongAlbumArt.Background = new SolidColorBrush(
                 field ? Color.FromRgb(0, 255, 255) : Color.FromRgb(255, 0, 255)
             );
             return field;
         }
         set {
             field = value;
-            Img_SongAlbumArt.Background = new SolidColorBrush(
+            Border_SongAlbumArt.Background = new SolidColorBrush(
                 value ? Color.FromRgb(0, 127, 127) : Color.FromRgb(127, 0, 127)
             );
         }

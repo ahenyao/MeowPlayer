@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using MeowPlayer.Utils;
 
@@ -46,10 +47,18 @@ public partial class LibraryView : UserControl {
             if (await Globals.PlayerView.Player.LoadAsync(filestream)) {
                 Globals.PlayerView.Song(Globals.PlayerView.Player.Title, Globals.PlayerView.Player.Artist, Globals.PlayerView.Player.Duration);
                 Globals.TabControl.SelectedIndex = 0;
-
+                //Globals.PlayerView.Player.Play();
                 PlatformMessaging.OnPlayRequested?.Invoke();
-
+                //ManagedBass.TagReader? tags = Globals.PlayerView.Player.GetAllTags();
                 ID3Reader id3Reader = new ID3Reader(stream: filestream);
+                // Console.WriteLine(a.Album);
+                // Console.WriteLine(a.Artist); 
+                // Console.WriteLine(a.Title);
+                Console.WriteLine(id3Reader.getValueFromTag("title"));
+                
+                var cover = id3Reader.GetFrontCover();
+                
+                Globals.PlayerView.Img_SongAlbumArt.Source = (cover is not null) ? new Bitmap(new MemoryStream(cover.Data)) : null;
             }
         }
     }
