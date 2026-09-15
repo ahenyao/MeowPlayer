@@ -100,7 +100,7 @@ jobs:
         shell: bash
         run: |
             mkdir -p installer/dist
-            tar -czf installer/dist/MeowPlayer-linux$MEOW_VERSION-arm64.tar.gz -C build/linux-arm64 .
+            tar -czf installer/dist/MeowPlayer-linux-$MEOW_VERSION-arm64.tar.gz -C build/linux-arm64 .
 
       - name: Upload artifact (Linux arm64)
         if: matrix.os == 'ubuntu-24.04-arm' && contains(matrix.targets, 'linux-arm64')
