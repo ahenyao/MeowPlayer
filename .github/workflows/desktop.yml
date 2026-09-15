@@ -1,0 +1,46 @@
+name: MeowPlayer - desktop build
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    name: a
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+
+        # Linux
+        - os: ubuntu-latest
+          targets: linux-x64
+
+        - os: ubuntu-24.04-arm
+          targets: "linux-arm linux-arm64"
+
+
+        # Windows
+        - os: windows-latest
+          target: "win-x86 win-x64"
+
+
+        # macOs
+        - os: macos-latest
+          targets: osx
+
+
+    steps:
+      - name: Pull repo
+      - uses: actions/checkout@v7
+
+      - name:  Setup dotnet
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.101'
+
+      - name: Build MeowPlayer
+      - run: |
+          for target in ${{ matrix.targets }}; do
+            dotnet publish MeowPlayer.Desktop/MeowPlayer.Desktop.csproj -c Release -r $target
+          done
+        shell: bash
