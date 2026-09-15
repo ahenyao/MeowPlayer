@@ -21,26 +21,27 @@ jobs:
 
         # Windows
         - os: windows-latest
-          target: "win-x86 win-x64"
+          targets: "win-x86 win-x64"
 
 
-        # macOs
+        # macOS
         - os: macos-latest
           targets: osx
 
 
     steps:
       - name: Pull repo
-      - uses: actions/checkout@v7
+        uses: actions/checkout@v7
 
       - name:  Setup dotnet
-      - uses: actions/setup-dotnet@v6
+        uses: actions/setup-dotnet@v6
         with:
           dotnet-version: '10.0.101'
 
       - name: Build MeowPlayer
-      - run: |
+        shell: bash
+        run: |
           for target in ${{ matrix.targets }}; do
             dotnet publish MeowPlayer.Desktop/MeowPlayer.Desktop.csproj -c Release -r $target
           done
-        shell: bash
+
