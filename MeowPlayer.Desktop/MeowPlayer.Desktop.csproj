@@ -46,8 +46,8 @@
     </ItemGroup>
 
     <PropertyGroup>
-        <PublishDir>..\build\</PublishDir>
-        <PublishSingleFile>true</PublishSingleFile>
+        <PublishDir>..\build\$(RuntimeIdentifier)\</PublishDir>
+        <PublishSingleFile>false</PublishSingleFile>
         <SelfContained>true</SelfContained>
         <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
         <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>

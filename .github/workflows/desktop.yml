@@ -47,3 +47,10 @@ jobs:
               dotnet publish MeowPlayer.Desktop/MeowPlayer.Desktop.csproj -c Release -r $target
             done
 
+      - name: Dir ls
+        shell: bash
+        run: |
+            ls -al build
+            pwd
+
+
