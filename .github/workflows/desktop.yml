@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    name: MeowPlayer Desktop - ${{ matrix.os }} - ${{ matrix.targets }}
+    name: MeowPlayer Desktop (${{ matrix.targets }})
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -26,7 +26,7 @@ jobs:
 
           # macOS
           - os: macos-latest
-            targets: osx
+            targets: "osx-x64 osx-arm64"
 
 
     steps:
