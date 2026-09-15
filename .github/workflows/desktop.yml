@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    name: a
+    name: MeowPlayer Desktop - ${{ matrix.os }} - ${{ matrix.targets }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -32,6 +32,8 @@ jobs:
     steps:
       - name: Pull repo
         uses: actions/checkout@v7
+        with:
+          submodules: recursive
 
       - name:  Setup dotnet
         uses: actions/setup-dotnet@v6
