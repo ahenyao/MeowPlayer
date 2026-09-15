@@ -53,6 +53,51 @@ jobs:
             ls -al build
             pwd
 
+
+
+# Linux
+
+      - name: Make .tar.gz package (Linux x64)
+        if: matrix.os == 'ubuntu-latest' && contains(matrix.targets, 'linux-x64')
+        env:
+          MEOW_VERSION: ${{ github.ref_name }}
+        shell: bash
+        run: |
+            mkdir installer/dist
+            for build in $(ls build); do
+              tar -czf installer/dist/MeowPlayer-linux-$MEOW_VERSION-x64.tar.gz -C build/linux-x64 .
+
+      - name: Make .tar.gz package (Linux arm)
+        if: matrix.os == 'ubuntu-24.04-arm' && contains(matrix.targets, 'linux-arm')
+        env:
+          MEOW_VERSION: ${{ github.ref_name }}
+        shell: bash
+        run: |
+            mkdir installer/dist
+            for build in $(ls build); do
+              tar -czf installer/dist/MeowPlayer-linux-$MEOW_VERSION-arm.tar.gz -C build/linux-arm .
+
+      - name: Make .tar.gz package (Linux arm64)
+        if: matrix.os == 'ubuntu-24.04-arm' && contains(matrix.targets, 'linux-arm64')
+        env:
+          MEOW_VERSION: ${{ github.ref_name }}
+        shell: bash
+        run: |
+            mkdir installer/dist
+            for build in $(ls build); do
+              tar -czf installer/dist/MeowPlayer-linux$MEOW_VERSION-arm64.tar.gz -C build/linux-arm64 .
+
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: installer-${{ matrix.os }}-${{ matrix.targets }}
+          path: ./installer/dist/*
+
+
+
+# Windows 
+
       - name: Install Inno Setup
         if: matrix.os == 'windows-latest'
         run: choco install innosetup --no-progress
@@ -70,6 +115,37 @@ jobs:
           MEOW_VERSION: ${{ github.ref_name }}
         run: |
           & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer\windows.iss /DMyAppVersion="$env:MEOW_VERSION" /DAppArch=x86
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: installer-${{ matrix.os }}-${{ matrix.targets }}
+          path: ./installer/dist/*
+
+
+
+# macOS
+
+      - name: Make .tar.gz package (macOS x64)
+        if: matrix.os == 'macos-latest' && contains(matrix.targets, 'osx-x64')
+        env:
+          MEOW_VERSION: ${{ github.ref_name }}
+        shell: bash
+        run: |
+            mkdir installer/dist
+            for build in $(ls build); do
+              tar -czf installer/dist/MeowPlayer-macos-$MEOW_VERSION-x64.tar.gz -C build/osx-x64 .
+
+      - name: Make .tar.gz package (macOS arm64)
+        if: matrix.os == 'macos-latest' && contains(matrix.targets, 'osx-arm64')
+        env:
+          MEOW_VERSION: ${{ github.ref_name }}
+        shell: bash
+        run: |
+            mkdir installer/dist
+            for build in $(ls build); do
+              tar -czf installer/dist/MeowPlayer-macos-$MEOW_VERSION-arm64.tar.gz -C build/osx-arm64 .
+
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
