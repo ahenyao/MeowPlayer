@@ -31,4 +31,5 @@ bin/
 obj/
 packages/
 build/
+installer/dist
 
