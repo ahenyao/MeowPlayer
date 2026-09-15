@@ -63,7 +63,7 @@ jobs:
           MEOW_VERSION: ${{ github.ref_name }}
         shell: bash
         run: |
-            mkdir installer/dist
+            mkdir -p installer/dist
             for build in $(ls build); do
               tar -czf installer/dist/MeowPlayer-linux-$MEOW_VERSION-x64.tar.gz -C build/linux-x64 .
             done
@@ -74,7 +74,7 @@ jobs:
           MEOW_VERSION: ${{ github.ref_name }}
         shell: bash
         run: |
-            mkdir installer/dist
+            mkdir -p installer/dist
             for build in $(ls build); do
               tar -czf installer/dist/MeowPlayer-linux-$MEOW_VERSION-arm.tar.gz -C build/linux-arm .
             done
@@ -85,7 +85,7 @@ jobs:
           MEOW_VERSION: ${{ github.ref_name }}
         shell: bash
         run: |
-            mkdir installer/dist
+            mkdir -p installer/dist
             for build in $(ls build); do
               tar -czf installer/dist/MeowPlayer-linux$MEOW_VERSION-arm64.tar.gz -C build/linux-arm64 .
             done
@@ -135,7 +135,7 @@ jobs:
           MEOW_VERSION: ${{ github.ref_name }}
         shell: bash
         run: |
-            mkdir installer/dist
+            mkdir -p installer/dist
             for build in $(ls build); do
               tar -czf installer/dist/MeowPlayer-macos-$MEOW_VERSION-x64.tar.gz -C build/osx-x64 .
             done
@@ -146,7 +146,7 @@ jobs:
           MEOW_VERSION: ${{ github.ref_name }}
         shell: bash
         run: |
-            mkdir installer/dist
+            mkdir -p installer/dist
             for build in $(ls build); do
               tar -czf installer/dist/MeowPlayer-macos-$MEOW_VERSION-arm64.tar.gz -C build/osx-arm64 .
             done
