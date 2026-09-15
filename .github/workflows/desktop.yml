@@ -91,11 +91,11 @@ jobs:
             done
 
 
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: installer-${{ matrix.os }}-${{ matrix.targets }}
-          path: ./installer/dist/*
+#      - name: Upload build artifacts
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: installer-${{ matrix.os }}-${{ matrix.targets }}
+#          path: ./installer/dist/*
 
 
 
@@ -119,11 +119,11 @@ jobs:
         run: |
           & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer\windows.iss /DMyAppVersion="$env:MEOW_VERSION" /DAppArch=x86
 
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: installer-${{ matrix.os }}-${{ matrix.targets }}
-          path: ./installer/dist/*
+#      - name: Upload build artifacts
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: installer-${{ matrix.os }}-${{ matrix.targets }}
+#          path: ./installer/dist/*
 
 
 
@@ -151,6 +151,10 @@ jobs:
               tar -czf installer/dist/MeowPlayer-macos-$MEOW_VERSION-arm64.tar.gz -C build/osx-arm64 .
             done
 
+
+
+
+#######################
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
