@@ -14,11 +14,13 @@ jobs:
           # Android
           - os: ubuntu-latest
             targets: "android-x86 android-x64 android-arm android-arm64"
+            platform: Android
 
 
           # macOS
           - os: macos-latest
             targets: "ios-arm64"
+            platform: iOS
 
 
     steps:
@@ -36,7 +38,7 @@ jobs:
         shell: bash
         run: |
             for target in ${{ matrix.targets }}; do
-              dotnet publish MeowPlayer.Desktop/MeowPlayer.Desktop.csproj -c Release -r $target
+              dotnet publish MeowPlayer.Desktop/MeowPlayer.${{matrix.platform}}.csproj -c Release -r $target
             done
 
       - name: Dir ls
