@@ -37,6 +37,7 @@ jobs:
       - name: Build MeowPlayer
         shell: bash
         run: |
+            dotnet workload restore MeowPlayer.${{matrix.platform}}/MeowPlayer.${{matrix.platform}}.csproj
             for target in ${{ matrix.targets }}; do
               dotnet publish MeowPlayer.${{matrix.platform}}/MeowPlayer.${{matrix.platform}}.csproj -c Release -r $target
             done
