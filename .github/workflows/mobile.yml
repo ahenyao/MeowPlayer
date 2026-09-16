@@ -77,8 +77,8 @@ jobs:
           MEOW_VERSION: ${{ github.ref_name }}
         shell: bash
         run: |
-            mv build/MeowPlayer-${{ matrix.targets }}.apk build/MeowPlayer-$MEOW_VERSION-${{ matrix.targets }}.apk || \
-            mv build/MeowPlayer-${{ matrix.targets }}.ipa build/MeowPlayer-$MEOW_VERSION-${{ matrix.targets }}.ipa
+            mv build/MeowPlayer-${{ matrix.targets }}.apk build/MeowPlayer-$MEOW_VERSION-${{ matrix.targets }}.apk || true
+            mv build/MeowPlayer-${{ matrix.targets }}.ipa build/MeowPlayer-$MEOW_VERSION-${{ matrix.targets }}.ipa || true
 
 
       - name: Upload artifact (${{ matrix.targets }})
