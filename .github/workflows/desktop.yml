@@ -75,7 +75,7 @@ jobs:
         run: |
             mkdir -p installer/dist
             ROOT_NAME="MeowPlayer-$MEOW_VERSION-${{ matrix.targets }}"
-            ln -s ${{ matrix.targets }} $ROOT_NAME
+            ln -s ${{ matrix.targets }} build/$ROOT_NAME
             tar -chzf installer/dist/$ROOT_NAME.tar.gz -C build $ROOT_NAME
 
       - name: "[Linux/macOS] Upload artifact (${{ matrix.targets }})"
