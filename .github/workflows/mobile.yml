@@ -38,7 +38,7 @@ jobs:
         shell: bash
         run: |
             for target in ${{ matrix.targets }}; do
-              dotnet publish MeowPlayer.Desktop/MeowPlayer.${{matrix.platform}}.csproj -c Release -r $target
+              dotnet publish MeowPlayer.${{matrix.platform}}/MeowPlayer.${{matrix.platform}}.csproj -c Release -r $target
             done
 
       - name: Dir ls
