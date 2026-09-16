@@ -11,11 +11,11 @@
 #endif
 
 #ifndef AppArch
-  #define AppArch "x64"
+  #define AppArch "win-x64"
 #endif
 
 
-#if AppArch == "x64"
+#if AppArch == "win-x64"
   #define SourceDir "..\build\win-x64"
 #else
   #define SourceDir "..\build\win-x86"
@@ -42,7 +42,7 @@ UninstallDisplayIcon={app}\{#MyAppExeName}
 CloseApplications=yes
 RestartApplications=no
 
-#if AppArch == "x64"
+#if AppArch == "win-x64"
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 #endif

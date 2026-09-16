@@ -71,3 +71,20 @@ jobs:
             ls -al build
             pwd
 
+
+      - name: Stage artifacts (${{ matrix.targets }})
+        env:
+          MEOW_VERSION: ${{ github.ref_name }}
+        shell: bash
+        run: |
+            mv build/MeowPlayer-${{ matrix.targets }}.apk build/MeowPlayer-${{ matrix.targets }}-$MEOW_VERSION.apk || \
+            mv build/MeowPlayer-${{ matrix.targets }}.ipa build/MeowPlayer-${{ matrix.targets }}-$MEOW_VERSION.ipa
+
+
+      - name: Upload artifact (${{ matrix.targets }})
+        uses: actions/upload-artifact@v4
+        with:
+          name: MeowPlayer-${{ matrix.targets }}
+          path: build/MeowPlayer-${{ matrix.targets }}-*.???
+
+
