@@ -74,14 +74,14 @@ jobs:
         shell: bash
         run: |
             mkdir -p installer/dist
-            tar -czf installer/dist/MeowPlayer-${{ matrix.targets }}-$MEOW_VERSION.tar.gz -C build/${{ matrix.targets }} .
+            tar -czf installer/dist/MeowPlayer-$MEOW_VERSION-${{ matrix.targets }}.tar.gz -C build/${{ matrix.targets }} .
 
       - name: "[Linux/macOS] Upload artifact (${{ matrix.targets }})"
         if: runner.os == 'Linux' || runner.os == 'macOS'
         uses: actions/upload-artifact@v7
         with:
           name: MeowPlayer-${{ matrix.targets }}
-          path: installer/dist/MeowPlayer-${{ matrix.targets }}-*.tar.gz
+          path: installer/dist/MeowPlayer-*-${{ matrix.targets }}.tar.gz
           archive: false
 
 
@@ -101,7 +101,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: MeowPlayer-${{ matrix.targets }}
-          path: installer/dist/*${{ matrix.targets }}*.exe
+          path: installer/dist/MeowPlayer-*${{ matrix.targets }}*.exe
           archive: false
 
 
