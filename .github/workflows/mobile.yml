@@ -85,7 +85,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: MeowPlayer-*-${{ matrix.targets }}
-          path: build/MeowPlayer-*-${{ matrix.targets }}-*.???
+          path: build/MeowPlayer-*-${{ matrix.targets }}.???
           archive: false
 
 
