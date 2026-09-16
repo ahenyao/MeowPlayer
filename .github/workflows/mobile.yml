@@ -1,0 +1,47 @@
+name: MeowPlayer - mobile build
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    name: MeowPlayer Mobile (${{ matrix.targets }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+          include:
+          # Android
+          - os: ubuntu-latest
+            targets: "android-x86 android-x64 android-arm android-arm64"
+
+
+          # macOS
+          - os: macos-latest
+            targets: "ios-arm64"
+
+
+    steps:
+      - name: Pull repo
+        uses: actions/checkout@v7
+        with:
+          submodules: recursive
+
+      - name:  Setup dotnet
+        uses: actions/setup-dotnet@v6
+        with:
+            dotnet-version: '10.0.101'
+
+      - name: Build MeowPlayer
+        shell: bash
+        run: |
+            for target in ${{ matrix.targets }}; do
+              dotnet publish MeowPlayer.Desktop/MeowPlayer.Desktop.csproj -c Release -r $target
+            done
+
+      - name: Dir ls
+        shell: bash
+        run: |
+            ls -al build
+            pwd
+

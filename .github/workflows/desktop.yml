@@ -13,7 +13,7 @@ jobs:
           include:
           # Linux
           - os: ubuntu-latest
-            targets: linux-x64
+            targets: "linux-x64"
 
           - os: ubuntu-24.04-arm
             targets: "linux-arm linux-arm64"
