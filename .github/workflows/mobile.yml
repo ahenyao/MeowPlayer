@@ -62,7 +62,7 @@ jobs:
         run: |
             dotnet workload restore MeowPlayer.iOS/MeowPlayer.iOS.csproj
             for target in ${{ matrix.targets }}; do
-              dotnet publish MeowPlayer.iOS/MeowPlayer.iOS.csproj -c Release -r $target /p:BuildIpa=true /p:EnableCodeSigning=false /p:CodesignRequireProvisioningProfile=false
+              dotnet publish MeowPlayer.iOS/MeowPlayer.iOS.csproj -c Release -r $target /p:BuildIpa=true /p:EnableCodeSigning=false /p:CodesignRequireProvisioningProfile=false /p:SuppressTrimAnalysisWarnings=true
             done
 
       - name: Dir ls
