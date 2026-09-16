@@ -67,8 +67,8 @@ jobs:
 
 # Linux / macOS
 
-      - name: Make .tar.gz package (${{ matrix.targets }})
-        if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
+      - name: [Linux/macOS] Make .tar.gz package (${{ matrix.targets }})
+        if: runner.os == 'Linux' || runner.os == 'macOS'
         env:
           MEOW_VERSION: ${{ github.ref_name }}
         shell: bash
@@ -76,8 +76,8 @@ jobs:
             mkdir -p installer/dist
             tar -czf installer/dist/MeowPlayer-${{ matrix.targets }}-$MEOW_VERSION.tar.gz -C build/${{ matrix.targets }} .
 
-      - name: Upload artifact (${{ matrix.targets }})
-        if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
+      - name: [Linux/macOS] Upload artifact (${{ matrix.targets }})
+        if: runner.os == 'Linux' || runner.os == 'macOS'
         uses: actions/upload-artifact@v4
         with:
           name: MeowPlayer-${{ matrix.targets }}
@@ -88,15 +88,15 @@ jobs:
 
 # Windows 
 
-      - name: Make installer package (${{ matrix.targets }})
-        if: matrix.os == 'windows-latest'
+      - name: [Windows] Make installer package (${{ matrix.targets }})
+        if: runner.os == 'Windows'
         env:
           MEOW_VERSION: ${{ github.ref_name }}
         run: |
           & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer\windows.iss /DMyAppVersion="$env:MEOW_VERSION" /DAppArch=${{ matrix.targets }}
 
-      - name: Upload artifact (${{ matrix.targets }})
-        if: matrix.os == 'windows-latest'
+      - name: [Windows] Upload artifact (${{ matrix.targets }})
+        if: runner.os == 'Windows'
         uses: actions/upload-artifact@v4
         with:
           name: MeowPlayer-${{ matrix.targets }}
