@@ -35,11 +35,21 @@ jobs:
             dotnet-version: '10.0.101'
 
       - name: Build MeowPlayer
+        if: matrix.platform == 'Android'
         shell: bash
         run: |
-            dotnet workload restore MeowPlayer.${{matrix.platform}}/MeowPlayer.${{matrix.platform}}.csproj
+            dotnet workload restore MeowPlayer.Android/MeowPlayer.Android.csproj
             for target in ${{ matrix.targets }}; do
-              dotnet publish MeowPlayer.${{matrix.platform}}/MeowPlayer.${{matrix.platform}}.csproj -c Release -r $target
+              dotnet publish MeowPlayer.Android/MeowPlayer.Android.csproj -c Release -r $target
+            done
+
+      - name: Build MeowPlayer
+        if: matrix.platform == 'iOS'
+        shell: bash
+        run: |
+            dotnet workload restore MeowPlayer.iOS/MeowPlayer.iOS.csproj
+            for target in ${{ matrix.targets }}; do
+              dotnet publish MeowPlayer.iOS/MeowPlayer.iOS.csproj -c Release -r $target /p:BuildIpa=true /p:EnableCodeSigning=false /p:CodesignRequireProvisioningProfile=false
             done
 
       - name: Dir ls
