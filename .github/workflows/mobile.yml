@@ -9,15 +9,28 @@ jobs:
     name: MeowPlayer Mobile (${{ matrix.targets }})
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
           include:
           # Android
           - os: ubuntu-latest
-            targets: "android-x86 android-x64 android-arm android-arm64"
+            targets: "android-x86"
+            platform: Android
+
+          - os: ubuntu-latest
+            targets: "android-x64"
+            platform: Android
+
+          - os: ubuntu-latest
+            targets: "android-arm"
+            platform: Android
+
+          - os: ubuntu-latest
+            targets: "android-arm64"
             platform: Android
 
 
-          # macOS
+          # iOS
           - os: macos-latest
             targets: "ios-arm64"
             platform: iOS
