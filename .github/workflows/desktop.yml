@@ -17,17 +17,26 @@ jobs:
             targets: "linux-x64"
 
           - os: ubuntu-24.04-arm
-            targets: "linux-arm linux-arm64"
+            targets: "linux-arm"
+
+          - os: ubuntu-24.04-arm
+            targets: "linux-arm64"
 
 
           # Windows
           - os: windows-latest
-            targets: "win-x86 win-x64"
+            targets: "win-x86"
+
+          - os: windows-latest
+            targets: "win-x64"
 
 
           # macOS
           - os: macos-latest
-            targets: "osx-x64 osx-arm64"
+            targets: "osx-x64"
+
+          - os: macos-latest
+            targets: "osx-arm64"
 
 
     steps:

@@ -67,9 +67,9 @@
         <RuntimeIdentifier>$(_HostOS)-$(_HostArch)</RuntimeIdentifier>
     </PropertyGroup>
     
-    <PropertyGroup Condition="'$(RuntimeIdentifier)' != ''">
+    <!--   <PropertyGroup Condition="'$(RuntimeIdentifier)' != ''">
         <AssemblyName>MeowPlayer-$(RuntimeIdentifier)</AssemblyName>
-    </PropertyGroup>
+    </PropertyGroup>   -->
 
     <PropertyGroup Condition="'$(Configuration)' == 'Release'">
         <DebugSymbols>false</DebugSymbols>
