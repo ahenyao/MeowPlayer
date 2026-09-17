@@ -2,14 +2,13 @@ name: MeowPlayer - release
 
 on:
   push:
-    branches: [ "*" ]
-    tags: [ "v*" ]
   pull_request:
 
 permissions:
   contents: write
 
 jobs:
+
   build-desktop:
     uses: ./.github/workflows/desktop.yml
 
@@ -23,41 +22,25 @@ jobs:
 
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
-          pattern: MeowPlayer-*
           path: ./release
           merge-multiple: true
+        
 
-      - name: Set Release Metadata
-        id: meta
-        shell: bash
-        run: |
-          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
-            echo "is_prerelease=false" >> "$GITHUB_OUTPUT"
-            echo "tag=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
-            echo "title=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
-
-          elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            SHORT_SHA=$(echo "${{ github.event.pull_request.head.sha }}" | cut -c1-7)
-            PR_NUMBER="${{ github.event.pull_request.number }}"
-
-            echo "is_prerelease=true" >> "$GITHUB_OUTPUT"
-            echo "tag=pr-${PR_NUMBER}-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
-            echo "title=PR #${PR_NUMBER} Build (${SHORT_SHA})" >> "$GITHUB_OUTPUT"
-
-          else
-            SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
-
-            echo "is_prerelease=true" >> "$GITHUB_OUTPUT"
-            echo "tag=build-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
-            echo "title=Pre-release Build (${SHORT_SHA})" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Publish Release
+      - name: Create release (by tag name)
         uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/v')
         with:
-          tag_name: ${{ steps.meta.outputs.tag }}
-          name: ${{ steps.meta.outputs.title }}
-          prerelease: ${{ steps.meta.outputs.is_prerelease == 'true' }}
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
           files: release/*
+
+      - name: Create release (by commit date)
+        uses: softprops/action-gh-release@v2
+        if: ! startsWith(github.ref, 'refs/tags/v')
+        with:
+          tag_name: "nightly-${{ github.sha }}"
+          name: ${{ format('{0:yyyy-MM-dd HH:mm}', github.event.head_commit.timestamp) }}
+          files: release/*
+  

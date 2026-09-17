@@ -85,6 +85,6 @@ jobs:
         with:
           name: MeowPlayer-*-${{ matrix.targets }}
           path: build/MeowPlayer-*-${{ matrix.targets }}.???
-          
+          archive: false
 
 
