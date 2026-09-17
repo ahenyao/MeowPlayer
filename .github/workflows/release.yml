@@ -22,6 +22,7 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           path: ./release
+          merge-multiple: true
         
 
       - name: Create release (by tag name)
