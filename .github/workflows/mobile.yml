@@ -1,8 +1,7 @@
 name: MeowPlayer - mobile build
 
 on:
-  push:
-  pull_request:
+  workflow_call:
 
 jobs:
   build:
