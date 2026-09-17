@@ -10,7 +10,7 @@ jobs:
     uses: ./.github/workflows/desktop.yml
 
   build-mobile:
-    uses: ./.github/workflows/desktop.yml
+    uses: ./.github/workflows/mobile.yml
 
   release:
     name: MeowPlayer release
