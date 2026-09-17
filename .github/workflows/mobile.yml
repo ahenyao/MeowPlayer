@@ -37,12 +37,12 @@ jobs:
 
     steps:
       - name: Pull repo
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: recursive
 
-      - name:  Setup dotnet
-        uses: actions/setup-dotnet@v6
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
         with:
             dotnet-version: '10.0.101'
 
@@ -64,6 +64,25 @@ jobs:
               dotnet publish MeowPlayer.iOS/MeowPlayer.iOS.csproj -c Release -r $target /p:BuildIpa=true /p:EnableCodeSigning=false /p:CodesignRequireProvisioningProfile=false /p:SuppressTrimAnalysisWarnings=true
             done
 
+      - name: "[Android] Sign apk"
+        if: matrix.platform == 'Android'
+        id: sign_apk
+        uses: ilharp/sign-android-release@13dd52242698526f951aa8bb8696204f6fea702a # v2.0.0
+        with:
+          releaseDir: build
+          signingKey: ${{ secrets.ANDROID_SIGNING_KEY }}
+          keyAlias: ${{ secrets.ANDROID_KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          buildToolsVersion: 36.0.0
+
+      - name: Replace apk
+        if: matrix.platform == 'Android'
+        shell: bash
+        run: |
+          mv -f "${{ steps.sign_apk.outputs.signedFile }}" "build/MeowPlayer-${{ matrix.targets }}.apk"
+
+
       - name: Dir ls
         shell: bash
         run: |
@@ -81,7 +100,7 @@ jobs:
 
 
       - name: Upload artifact (${{ matrix.targets }})
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: MeowPlayer-*-${{ matrix.targets }}
           path: build/MeowPlayer-*-${{ matrix.targets }}.???
