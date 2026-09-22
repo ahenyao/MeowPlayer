@@ -38,7 +38,7 @@
 
     <Target Name="CopyApkToBuildDir" AfterTargets="Publish">
         <ItemGroup>
-            <SignedApk Include="$(PublishDir)*-Signed.apk" />
+            <SignedApk Include="$(PublishDir)*.apk" Exclude="$(PublishDir)*-Signed.apk"/>
         </ItemGroup>
 
         <PropertyGroup>

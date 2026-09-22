@@ -1,0 +1,109 @@
+name: MeowPlayer - mobile build
+
+on:
+  workflow_call:
+
+jobs:
+  build:
+    name: MeowPlayer Mobile (${{ matrix.targets }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+          include:
+          # Android
+          - os: ubuntu-latest
+            targets: "android-x86"
+            platform: Android
+
+          - os: ubuntu-latest
+            targets: "android-x64"
+            platform: Android
+
+          - os: ubuntu-latest
+            targets: "android-arm"
+            platform: Android
+
+          - os: ubuntu-latest
+            targets: "android-arm64"
+            platform: Android
+
+
+          # iOS
+          - os: macos-latest
+            targets: "ios-arm64"
+            platform: iOS
+
+
+    steps:
+      - name: Pull repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: recursive
+
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+            dotnet-version: '10.0.101'
+
+      - name: Build MeowPlayer
+        if: matrix.platform == 'Android'
+        shell: bash
+        run: |
+            dotnet workload restore MeowPlayer.Android/MeowPlayer.Android.csproj
+            for target in ${{ matrix.targets }}; do
+              dotnet publish MeowPlayer.Android/MeowPlayer.Android.csproj -c Release -r $target
+            done
+
+      - name: Build MeowPlayer
+        if: matrix.platform == 'iOS'
+        shell: bash
+        run: |
+            dotnet workload restore MeowPlayer.iOS/MeowPlayer.iOS.csproj
+            for target in ${{ matrix.targets }}; do
+              dotnet publish MeowPlayer.iOS/MeowPlayer.iOS.csproj -c Release -r $target /p:BuildIpa=true /p:EnableCodeSigning=false /p:CodesignRequireProvisioningProfile=false /p:SuppressTrimAnalysisWarnings=true
+            done
+
+      - name: "[Android] Sign apk"
+        if: matrix.platform == 'Android'
+        id: sign_apk
+        uses: ilharp/sign-android-release@13dd52242698526f951aa8bb8696204f6fea702a # v2.0.0
+        with:
+          releaseDir: build
+          signingKey: ${{ secrets.ANDROID_SIGNING_KEY }}
+          keyAlias: ${{ secrets.ANDROID_KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          buildToolsVersion: 36.0.0
+
+      - name: Replace apk
+        if: matrix.platform == 'Android'
+        shell: bash
+        run: |
+          mv -f "${{ steps.sign_apk.outputs.signedFile }}" "build/MeowPlayer-${{ matrix.targets }}.apk"
+
+
+      - name: Dir ls
+        shell: bash
+        run: |
+            ls -al build
+            pwd
+
+
+      - name: Stage artifacts (${{ matrix.targets }})
+        env:
+          MEOW_VERSION: ${{ github.ref_name }}
+        shell: bash
+        run: |
+            mv build/MeowPlayer-${{ matrix.targets }}.apk build/MeowPlayer-$MEOW_VERSION-${{ matrix.targets }}.apk || true
+            mv build/MeowPlayer-${{ matrix.targets }}.ipa build/MeowPlayer-$MEOW_VERSION-${{ matrix.targets }}.ipa || true
+
+
+      - name: Upload artifact (${{ matrix.targets }})
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: MeowPlayer-*-${{ matrix.targets }}
+          path: build/MeowPlayer-*-${{ matrix.targets }}.???
+          archive: false
+
+

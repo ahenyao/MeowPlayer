@@ -1,0 +1,111 @@
+name: MeowPlayer - desktop build
+
+on:
+  workflow_call:
+
+jobs:
+  build:
+    name: MeowPlayer Desktop (${{ matrix.targets }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+          include:
+          # Linux
+          - os: ubuntu-latest
+            targets: "linux-x64"
+
+          - os: ubuntu-24.04-arm
+            targets: "linux-arm"
+
+          - os: ubuntu-24.04-arm
+            targets: "linux-arm64"
+
+
+          # Windows
+          - os: windows-latest
+            targets: "win-x86"
+
+          - os: windows-latest
+            targets: "win-x64"
+
+
+          # macOS
+          - os: macos-latest
+            targets: "osx-x64"
+
+          - os: macos-latest
+            targets: "osx-arm64"
+
+
+    steps:
+      - name: Pull repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: recursive
+
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+            dotnet-version: '10.0.101'
+
+      - name: Build MeowPlayer
+        shell: bash
+        run: |
+            for target in ${{ matrix.targets }}; do
+              dotnet publish MeowPlayer.Desktop/MeowPlayer.Desktop.csproj -c Release -r $target
+            done
+
+      - name: Dir ls
+        shell: bash
+        run: |
+            ls -al build
+            pwd
+
+
+
+# Linux / macOS
+
+      - name: "[Linux/macOS] Make .tar.gz package (${{ matrix.targets }})"
+        if: runner.os == 'Linux' || runner.os == 'macOS'
+        env:
+          MEOW_VERSION: ${{ github.ref_name }}
+        shell: bash
+        run: |
+            mkdir -p installer/dist
+            ROOT_NAME="MeowPlayer-$MEOW_VERSION-${{ matrix.targets }}"
+            ln -s ${{ matrix.targets }} build/$ROOT_NAME
+            tar -chzf installer/dist/$ROOT_NAME.tar.gz -C build $ROOT_NAME
+
+      - name: "[Linux/macOS] Upload artifact (${{ matrix.targets }})"
+        if: runner.os == 'Linux' || runner.os == 'macOS'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: MeowPlayer-${{ matrix.targets }}
+          path: installer/dist/MeowPlayer-*-${{ matrix.targets }}.tar.gz
+          archive: false
+
+
+
+
+# Windows 
+
+      - name: "[Windows] Make installer package (${{ matrix.targets }})"
+        if: runner.os == 'Windows'
+        env:
+          MEOW_VERSION: ${{ github.ref_name }}
+        run: |
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer\windows.iss /DMyAppVersion="$env:MEOW_VERSION" /DAppArch=${{ matrix.targets }}
+
+      - name: "[Windows] Upload artifact (${{ matrix.targets }})"
+        if: runner.os == 'Windows'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: MeowPlayer-${{ matrix.targets }}
+          path: installer/dist/MeowPlayer-*${{ matrix.targets }}*.exe
+          archive: false
+
+
+
+
+

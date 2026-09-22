@@ -46,8 +46,8 @@
     </ItemGroup>
 
     <PropertyGroup>
-        <PublishDir>..\build\</PublishDir>
-        <PublishSingleFile>true</PublishSingleFile>
+        <PublishDir>..\build\$(RuntimeIdentifier)\</PublishDir>
+        <PublishSingleFile>false</PublishSingleFile>
         <SelfContained>true</SelfContained>
         <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
         <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
@@ -67,9 +67,9 @@
         <RuntimeIdentifier>$(_HostOS)-$(_HostArch)</RuntimeIdentifier>
     </PropertyGroup>
     
-    <PropertyGroup Condition="'$(RuntimeIdentifier)' != ''">
+    <!--   <PropertyGroup Condition="'$(RuntimeIdentifier)' != ''">
         <AssemblyName>MeowPlayer-$(RuntimeIdentifier)</AssemblyName>
-    </PropertyGroup>
+    </PropertyGroup>   -->
 
     <PropertyGroup Condition="'$(Configuration)' == 'Release'">
         <DebugSymbols>false</DebugSymbols>

@@ -4,6 +4,8 @@
         <TargetFramework>net10.0-ios</TargetFramework>
         <SupportedOSPlatformVersion>13.0</SupportedOSPlatformVersion>
         <Nullable>enable</Nullable>
+        <SuppressTrimAnalysisWarnings>true</SuppressTrimAnalysisWarnings>
+        <NoWarn>$(NoWarn);IL2104</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>
@@ -17,4 +19,19 @@
     <ItemGroup>
         <NativeReference Include="..\External\libs\un4seen_bass\ios\bass.xcframework" Kind="Framework" SmartLink="False" ForceLoad="True"/>
     </ItemGroup>
+
+    <Target Name="CopyIpaToBuildDir" AfterTargets="Publish">
+        <ItemGroup>
+            <_GeneratedIpa Include="$(PublishDir)*.ipa;$(OutputPath)*.ipa" />
+        </ItemGroup>
+
+        <PropertyGroup>
+            <_ArchSuffix>-ios-arm64</_ArchSuffix>
+            <_ArchSuffix Condition="'$(RuntimeIdentifier)' != ''">-$(RuntimeIdentifier)</_ArchSuffix>
+        </PropertyGroup>
+
+        <Copy SourceFiles="@(_GeneratedIpa)"
+              DestinationFiles="$(MSBuildProjectDirectory)\..\build\MeowPlayer$(_ArchSuffix).ipa"
+              SkipUnchangedFiles="true" />
+    </Target>
 </Project>
